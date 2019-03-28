@@ -22,6 +22,38 @@ app.use(fileUpload());
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// routerUsuarioSession
+var routerUsuarioSession = express.Router();
+routerUsuarioSession.use(function(req, res, next) {
+    console.log("routerUsuarioSession");
+    if ( req.session.usuario ) {
+        next();
+    } else {
+        console.log("va a : "+req.session.destino);
+        res.redirect("/identificarse");
+    }
+});
+//Aplicar router UsuarioSession
+app.use("/canciones/agregar",routerUsuarioSession);
+app.use("/publicaciones",routerUsuarioSession);
+//routerAudios
+var routerAudios = express.Router();
+routerAudios.use(function(req, res, next) {
+    console.log("routerAudios");
+    var path = require('path');
+    var idCancion = path.basename(req.originalUrl, '.mp3');
+    gestorBD.obtenerCanciones( {
+        id : mongo.ObjectID(idCancion)
+    }, function (canciones) {
+        if(req.session.usuario && canciones[0].autor == req.session.usuario ){
+            next();
+        } else {
+            res.redirect("/tienda");
+        }
+    })
+});
+//Aplicar routerAudios app.use("/audios/",routerAudios);
 // Variables
 app.set('port', 8081);
 app.set('db',"mongodb://admin:sdi@tiendamusica-shard-00-00-l4it7.mongodb.net:27017,tiendamusica-shard-00-01-l4it7.mongodb.net:27017,tiendamusica-shard-00-02-l4it7.mongodb.net:27017/test?ssl=true&replicaSet=tiendaMusica-shard-0&authSource=admin&retryWrites=true");

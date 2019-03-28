@@ -50,4 +50,5 @@ module.exports = function(app, swig, gestorBD) {
         req.session.usuario = null;
         res.send("Usuario desconectado");
     })
+
 };
