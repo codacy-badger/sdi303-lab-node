@@ -8,6 +8,9 @@ var swig = require('swig');
 var gestorBD = require("./modules/gestorBD.js");
 gestorBD.init(app,mongo);
 
+var fileUpload = require('express-fileupload');
+app.use(fileUpload());
+
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
