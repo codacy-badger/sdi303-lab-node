@@ -44,7 +44,7 @@ routerAudios.use(function(req, res, next) {
     var path = require('path');
     var idCancion = path.basename(req.originalUrl, '.mp3');
     gestorBD.obtenerCanciones( {
-        id : mongo.ObjectID(idCancion)
+        _id : mongo.ObjectID(idCancion)
     }, function (canciones) {
         if(req.session.usuario && canciones[0].autor == req.session.usuario ){
             next();
@@ -53,7 +53,8 @@ routerAudios.use(function(req, res, next) {
         }
     })
 });
-//Aplicar routerAudios app.use("/audios/",routerAudios);
+//Aplicar routerAudios
+app.use("/audios/",routerAudios);
 // Variables
 app.set('port', 8081);
 app.set('db',"mongodb://admin:sdi@tiendamusica-shard-00-00-l4it7.mongodb.net:27017,tiendamusica-shard-00-01-l4it7.mongodb.net:27017,tiendamusica-shard-00-02-l4it7.mongodb.net:27017/test?ssl=true&replicaSet=tiendaMusica-shard-0&authSource=admin&retryWrites=true");

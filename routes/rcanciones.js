@@ -64,7 +64,8 @@ module.exports = function (app, swig, gestorBD) {
             return;
         }
         var cancion = {
-            nombre : req.body.nombre, genero : req.body.genero,
+            nombre : req.body.nombre,
+            genero : req.body.genero,
             precio : req.body.precio,
             autor: req.session.usuario
         }
@@ -73,7 +74,6 @@ module.exports = function (app, swig, gestorBD) {
             if (id == null) {
                 res.send("Error al insertar ");
             } else {
-                res.send("Agregada id: " + id);
                 if (req.files.portada != null) {
                     var imagen = req.files.portada;
                     imagen.mv('public/portadas/' + id + '.png', function(err) {
@@ -112,19 +112,16 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     app.get('/cancion/modificar/:id', function (req, res) {
-        var id = req.params.id;
-        var criterio = { "_id" : gestorBD.mongo.ObjectID(id) };
+        var criterio = { "_id" : gestorBD.mongo.ObjectID(req.params.id) };
         gestorBD.obtenerCanciones(criterio,function(canciones){
             if ( canciones == null ){
                 res.send(respuesta);
             } else {
-                paso1ModificarPortada(req.files, id, function (result) {
-                    if( result == null){
-                        res.send("Error en la modificación");
-                    } else {
-                        res.send("Modificado");
-                    }
-                });
+                var respuesta = swig.renderFile('views/bcancionModificar.html',
+                    {
+                        cancion : canciones[0]
+                    });
+                res.send(respuesta);
             }
         });
     });
