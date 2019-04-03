@@ -85,6 +85,9 @@ routerUsuarioAutor.use(function(req, res, next) {
 //Aplicar routerUsuarioAutor
 app.use("/cancion/modificar",routerUsuarioAutor);
 app.use("/cancion/eliminar",routerUsuarioAutor);
+app.get('/', function (req, res) {
+    res.redirect('/tienda');
+})
 // lanzar el servidor
 app.listen(app.get('port'), function() {
     console.log("Servidor activo");

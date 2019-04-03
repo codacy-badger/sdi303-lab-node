@@ -21,7 +21,7 @@ module.exports = function(app, swig, gestorBD) {
             if (id == null){
                 res.send("Error al insertar ");
             } else {
-                res.send('Usuario Insertado ' + id);
+                res.redirect("/identificarse");
             }
         });
     })
