@@ -7,6 +7,8 @@ var swig = require('swig');
 var app = express();
 var crypto = require('crypto');
 var expressSession = require('express-session');
+var fs = require('fs');
+var https = require('https');
 app.use(expressSession({
     secret: 'abcdefg',
     resave: true,
@@ -94,6 +96,13 @@ routerUsuarioAutor.use(function(req, res, next) {
             }
         })
 });
+app.use( function (err, req, res, next ) {
+    console.log("Error producido: " + err); //we log the error in our db
+    if (! res.headersSent) {
+        res.status(400);
+        res.send("Recurso no disponible");
+    }
+});
 //Aplicar routerUsuarioAutor
 app.use("/cancion/modificar",routerUsuarioAutor);
 app.use("/cancion/eliminar",routerUsuarioAutor);
@@ -101,6 +110,9 @@ app.get('/', function (req, res) {
     res.redirect('/tienda');
 })
 // lanzar el servidor
-app.listen(app.get('port'), function() {
+https.createServer({
+    key: fs.readFileSync('certificates/alice.key'),
+    cert: fs.readFileSync('certificates/alice.crt')
+}, app).listen(app.get('port'), function() {
     console.log("Servidor activo");
 });
