@@ -161,13 +161,14 @@ module.exports = function (app, swig, gestorBD) {
         }
         gestorBD.modificarCancion(criterio, cancion, function(result) {
             if (result == null) {
-                res.send("Error al modificar ");
-            } else { res.send("Modificado "+result);
+                res.redirect("/publicaciones?mensaje=Error al modificar");
+            } else {
+                res.send("Modificado "+result);
                 paso1ModificarPortada(req.files, id, function (result) {
                     if( result == null){
-                        res.send("Error en la modificación");
+                        res.redirect("/publicaciones?mensaje=Error al modificar");
                     } else {
-                        res.redirect("/publicaciones");
+                        res.redirect("/publicaciones?mensaje=Modificado");
                     }
                 });
             }
