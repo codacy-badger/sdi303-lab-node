@@ -7,6 +7,14 @@ app.set('jwt',jwt);
 var bodyParser = require('body-parser');
 var swig = require('swig');
 var app = express();
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, UPDATE, PUT");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
+    // Debemos especificar todas las headers que se aceptan Content-Type , token
+    next();
+});
 var crypto = require('crypto');
 var expressSession = require('express-session');
 var fs = require('fs');
@@ -55,24 +63,21 @@ routerUsuarioToken.use(function(req, res, next) {
 });
 // Aplicar routerUsuarioToken
 app.use('/api/cancion', routerUsuarioToken);
-}
 
 // routerUsuarioSession
 var routerUsuarioSession = express.Router();
 routerUsuarioSession.use(function(req, res, next) {
     console.log("routerUsuarioSession");
     if ( req.session.usuario ) {
+// dejamos correr la petición
         next();
     } else {
-        console.log("va a : "+req.session.destino);
+        req.session.destino = req.originalUrl;
+        console.log("va a : "+req.session.destino)
         res.redirect("/identificarse");
     }
 });
-//Aplicar router UsuarioSession
-app.use("/canciones/agregar",routerUsuarioSession);
-app.use("/publicaciones",routerUsuarioSession);
-app.use("/cancion/comprar",routerUsuarioSession);
-app.use("/compras",routerUsuarioSession);
+
 //routerAudios
 var routerAudios = express.Router();
 routerAudios.use(function(req, res, next) {
