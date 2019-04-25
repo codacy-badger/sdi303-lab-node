@@ -139,6 +139,16 @@ app.use( function (err, req, res, next ) {
         res.send("Recurso no disponible");
     }
 });
+app.get('/memoria', function(req, res){
+    setTimeout(function() { // Espera de 10 segundos
+        console.log(os.freemem());
+        var memoriaLibre = os.freemem() / 1000000; //pasar a MB
+        res.status(200);
+        res.json({
+            memoria : memoriaLibre
+        });
+    }, 10000);
+});
 //Aplicar routerUsuarioAutor
 app.use("/cancion/modificar",routerUsuarioAutor);
 app.use("/cancion/eliminar",routerUsuarioAutor);
