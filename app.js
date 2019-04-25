@@ -1,9 +1,11 @@
 // Módulos
 var mongo = require('mongodb');
 var express = require('express');
+var rest = require('request');
 var app = express();
 var jwt = require('jsonwebtoken');
 app.set('jwt',jwt);
+app.set('rest',rest);
 var bodyParser = require('body-parser');
 var swig = require('swig');
 var app = express();
@@ -36,29 +38,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // routerUsuarioToken
 var routerUsuarioToken = express.Router();
-
-routerUsuarioToken.use(function(req, res, next) {
-    // obtener el token, vía headers (opcionalmente GET y/o POST).
+routerUsuarioToken.use(function(req, res, next) { // obtener el token, vía headers (opcionalmente GET y/o POST).
     var token = req.headers['token'] || req.body.token || req.query.token;
     if (token != null) {
         // verificar el token
         jwt.verify(token, 'secreto', function(err, infoToken) {
-            if (err || (Date.now()/1000 - infoToken.tiempo) > 240 ) {
+            if (err || (Date.now()/1000 - infoToken.tiempo) > 240 ){
                 res.status(403); // Forbidden
-                res.json({acceso: false, error: 'Token invalido o caducado'});
-                // También podríamos comprobar que intoToken.usuario existe
-                return;
-            }else {
-                // dejamos correr la petición
-                res.usuario = infoToken.usuario; next();
+                res.json({ acceso : false, error: 'Token invalido o caducado' });
+                // También podríamos comprobar que intoToken.usuario existe return;
+                } else { // dejamos correr la petición
+                    res.usuario = infoToken.usuario; next();
             }
         });
     } else {
         res.status(403); // Forbidden
-        res.json({
-            acceso : false,
-            mensaje: 'No hay Token'
-        });
+        res.json({ acceso : false, mensaje: 'No hay Token' });
     }
 });
 // Aplicar routerUsuarioToken
@@ -96,6 +91,7 @@ routerAudios.use(function(req, res, next) {
 });
 //Aplicar routerAudios
 app.use("/audios/",routerAudios);
+
 // Variables
 app.set('port', 8081);
 app.set('db',"mongodb://admin:sdi@tiendamusica-shard-00-00-l4it7.mongodb.net:27017,tiendamusica-shard-00-01-l4it7.mongodb.net:27017,tiendamusica-shard-00-02-l4it7.mongodb.net:27017/test?ssl=true&replicaSet=tiendaMusica-shard-0&authSource=admin&retryWrites=true");
@@ -106,6 +102,7 @@ app.set('crypto',crypto);
 require("./routes/rusuarios.js")(app, swig, gestorBD); // (app, param1, param2, etc.)
 require("./routes/rcanciones.js")(app, swig, gestorBD); // (app, param1, param2, etc.)
 require("./routes/rapicanciones.js")(app, gestorBD);
+
 
 //routerUsuarioAutor
 var routerUsuarioAutor = express.Router();
@@ -145,6 +142,7 @@ app.use( function (err, req, res, next ) {
 //Aplicar routerUsuarioAutor
 app.use("/cancion/modificar",routerUsuarioAutor);
 app.use("/cancion/eliminar",routerUsuarioAutor);
+
 app.get('/', function (req, res) {
     res.redirect('/tienda');
 })
